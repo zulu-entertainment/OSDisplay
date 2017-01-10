@@ -128,7 +128,7 @@ BOOL darkMode;
             HelpLog(@"  -i brightness");
             HelpLog(@"  -i contrast");
             HelpLog(@"  -i eject");
-            HelpLog(@"  -i montior");
+            HelpLog(@"  -i monitor");
             HelpLog(@"  -i information");
             HelpLog(@"  -i monster");
             HelpLog(@"-------------------------------------");
