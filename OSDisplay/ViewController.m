@@ -105,7 +105,9 @@ BOOL darkMode;
 */        
         else if ([args[i] isEqualToString:@"-h"]) {
             HelpLog(@"-------------------------------------");
-            HelpLog(@"OSDisplay 0.1");
+            HelpLog(@"%@ %@",
+                    [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"],
+                    [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
             HelpLog(@"-------------------------------------");
             HelpLog(@"Arguments:");
             HelpLog(@"  -i\tpath to image-file");
@@ -134,7 +136,7 @@ BOOL darkMode;
             HelpLog(@"-------------------------------------");
             HelpLog(@"\n");
             
-            osdMessage = @"OSDisplay";
+            osdMessage = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
             osdImagePath = @"monster";
             showMessage = YES;
             showImage = YES;
@@ -161,14 +163,11 @@ BOOL darkMode;
         DebugLog(@"First instance run!");
 
         if (darkMode) {
-            tintColor = [NSColor colorWithWhite:1.0 alpha:0.8];
+            tintColor = [NSColor colorWithWhite:1.0 alpha:0.85];
         }
         else {
-            tintColor = [NSColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:0.8];
+            tintColor = [NSColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:0.85];
         }
-        
-        // tint the default image
-        self.OsdImageView.image = [[NSImage imageNamed:@"monster"] tintImageWithColor:tintColor];
         
         // configure the font size and color
         self.OsdTextField.font = [NSFont systemFontOfSize:18.0 weight:0.36];
@@ -204,9 +203,11 @@ BOOL darkMode;
         } else if (showMessage) {
             self.OsdImageView.image = nil;
             self.textBottomSpace.constant = (self.view.bounds.size.height-self.OsdTextField.bounds.size.height)/2;
+        } else {
+            // tint and use the default image
+            self.OsdImageView.image = [[NSImage imageNamed:@"monster"] tintImageWithColor:tintColor];
         }
-        
-        
+
         self.OsdLevelIndicator.hidden = YES;
         if (showMessage) {
             self.OsdTextField.hidden = NO;
@@ -298,15 +299,8 @@ BOOL darkMode;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         DebugLog(@"So long, ...");
         context.duration = 0.5f;
-/*
-        for (NSView *sub in self.view.subviews) {
-            sub.animator.alphaValue = 0.0f;
-            DebugLog(@"%@" , sub);
-        }
-*/
         self.view.animator.alphaValue = 0.0f;
-
-
+        self.view.window.animator.alphaValue = 0.0f;
     } completionHandler:^{
         DebugLog(@"and thanks for all the fish!");
         [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
@@ -468,25 +462,6 @@ BOOL darkMode;
     self = [super initWithCoder:coder];
     
     if (self) {
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"darkMode"]) {
-            darkMode = YES;
-        } else if ([[NSUserDefaults standardUserDefaults] boolForKey:@"lightMode"]) {
-            darkMode = NO;
-        } else { // use system defaults
-            /*
-            NSString *darkModeString = (__bridge NSString *)(CFPreferencesCopyValue((CFStringRef)@"AppleInterfaceStyle",
-                                                                                    kCFPreferencesAnyApplication,
-                                                                                    kCFPreferencesCurrentUser,
-                                                                                    kCFPreferencesCurrentHost));
-             */
-            NSString *darkModeString =  [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
-            if ([darkModeString isEqualToString:@"Dark"]) {
-                darkMode = YES;
-            }
-            else {
-                darkMode = NO;
-            }
-        }
         self.wantsLayer = YES;
         self.layer.frame = self.bounds;
         self.layer.masksToBounds = YES;
@@ -494,7 +469,7 @@ BOOL darkMode;
         [self setBlendingMode:NSVisualEffectBlendingModeBehindWindow];
         [self setState:NSVisualEffectStateActive];
         [self setMaskImage:[[NSImage alloc] cornerMask]];
-        
+        [self setMaterial:NSVisualEffectMaterialPopover];
         /*  Material modes:
          default     0   NSVisualEffectMaterialAppearanceBased
          light       1   NSVisualEffectMaterialLight
@@ -507,12 +482,13 @@ BOOL darkMode;
          mediumlight 8   NSVisualEffectMaterialMediumLight
          ultradark   9   NSVisualEffectMaterialUltraDark
          */
-        if (darkMode) {
+        
+        if ([[[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"] isEqualToString:@"Dark"]) {
+            darkMode = YES;
             [self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantDark]];
-            [self setMaterial:NSVisualEffectMaterialDark];
         } else {
+            darkMode = NO;
             [self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantLight]];
-            [self setMaterial:4];
         }
         
         DebugLog(@"with '%@' and material: '%i'!", self.appearance.name, (int)[self material]);
@@ -533,12 +509,12 @@ BOOL darkMode;
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
     // Draw the background
-    [[NSColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:0.8] set];
+    [[NSColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:0.85] set];
     NSRectFill(NSInsetRect(cellFrame, 0, 5));
     cellFrame = NSInsetRect(cellFrame, 1, 6);
     
     // Draw the segments
-    NSColor *fillColor = [NSColor colorWithDeviceWhite:1.0 alpha:0.8];
+    NSColor *fillColor = [NSColor colorWithDeviceWhite:1.0 alpha:0.85];
     double val = ((self.floatValue - self.minValue) / (self.maxValue - self.minValue) * (self.maxValue - self.minValue) / 100);
     int segments = (int)(self.maxValue - self.minValue);
     float step = cellFrame.size.width / segments;	// width of one segment
