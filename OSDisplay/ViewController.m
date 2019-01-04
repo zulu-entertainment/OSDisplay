@@ -166,7 +166,7 @@ BOOL darkMode;
         DebugLog(@"First instance run!");
 
         if (darkMode) {
-            tintColor = [NSColor colorWithWhite:1.0 alpha:0.85];
+            tintColor = [NSColor colorWithWhite:0.9 alpha:0.85];
         }
         else {
             tintColor = [NSColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:0.85];
@@ -517,7 +517,7 @@ BOOL darkMode;
     cellFrame = NSInsetRect(cellFrame, 1, 6);
     
     // Draw the segments
-    NSColor *fillColor = [NSColor colorWithDeviceWhite:1.0 alpha:0.85];
+    NSColor *fillColor = [NSColor colorWithDeviceWhite:0.9 alpha:0.85];
     double val = ((self.floatValue - self.minValue) / (self.maxValue - self.minValue) * (self.maxValue - self.minValue) / 100);
     int segments = (int)(self.maxValue - self.minValue);
     float step = cellFrame.size.width / segments;	// width of one segment
