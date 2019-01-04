@@ -129,7 +129,7 @@ BOOL darkMode;
             HelpLog(@"  .pdf");
             HelpLog(@"  .tiff");
             HelpLog(@"\n");
-            HelpLog(@"Build-In images can be used with:");
+            HelpLog(@"Built-In images can be used with:");
             HelpLog(@"  -i brightness");
             HelpLog(@"  -i contrast");
             HelpLog(@"  -i eject");
