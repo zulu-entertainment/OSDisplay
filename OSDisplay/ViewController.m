@@ -38,7 +38,7 @@ BOOL darkMode;
     NSInteger osdLevel = -1;
     NSInteger argc = [args count];
     NSString *tray = @"";
-    exitDelay = 2.5;
+    exitDelay = 1.5;
     
     // Commandline arguments
     for (int i=1; i<argc; i++)
@@ -86,7 +86,10 @@ BOOL darkMode;
             i++;
             if (i >= argc) break;
             exitDelay = [args[i] floatValue];
-            if (exitDelay < 1.0 || exitDelay > 60.0) exitDelay = 3.0;
+            if (exitDelay < 1.0 || exitDelay > 60.0) {
+                exitDelay = 1.5;
+                ErrorLog(@"Resetting delay to: %f", exitDelay);
+            }
         }
         
         else if ([args[i] isEqualToString:@"-tray"]) {
@@ -298,7 +301,7 @@ BOOL darkMode;
 {
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         DebugLog(@"So long, ...");
-        context.duration = 0.5f;
+        context.duration = 1.0f;
         self.view.animator.alphaValue = 0.0f;
         self.view.window.animator.alphaValue = 0.0f;
     } completionHandler:^{
