@@ -27,7 +27,7 @@ Usage:
  
  Supported formats are: .png .pdf .tiff
  
-    Build-In images can be used with:
+    Built-In images can be used with:
  
       -i	brightness
    
