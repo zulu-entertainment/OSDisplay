@@ -302,7 +302,6 @@ BOOL darkMode;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         DebugLog(@"So long, ...");
         context.duration = 1.0f;
-        self.view.animator.alphaValue = 0.0f;
         self.view.window.animator.alphaValue = 0.0f;
     } completionHandler:^{
         DebugLog(@"and thanks for all the fish!");
@@ -465,33 +464,67 @@ BOOL darkMode;
     self = [super initWithCoder:coder];
     
     if (self) {
+        
+        NSOperatingSystemVersion os = [[NSProcessInfo processInfo] operatingSystemVersion];
+        DebugLog(@"Found macOS %@", [NSString stringWithFormat:@"%ld.%ld.%ld", os.majorVersion, os.minorVersion, os.patchVersion]);
+        
         self.wantsLayer = YES;
         self.layer.frame = self.bounds;
         self.layer.masksToBounds = YES;
         
-        [self setBlendingMode:NSVisualEffectBlendingModeBehindWindow];
+        [self setBlendingMode:NSVisualEffectBlendingModeWithinWindow];
         [self setState:NSVisualEffectStateActive];
         [self setMaskImage:[[NSImage alloc] cornerMask]];
-        [self setMaterial:NSVisualEffectMaterialPopover];
+        
         /*  Material modes:
-         default     0   NSVisualEffectMaterialAppearanceBased
-         light       1   NSVisualEffectMaterialLight
-         dark        2   NSVisualEffectMaterialDark
-         titlebar    3   NSVisualEffectMaterialTitlebar
-         dock ?      4
-         menu        5   NSVisualEffectMaterialMenu
-         popover     6   NSVisualEffectMaterialPopover
-         sidebar     7   NSVisualEffectMaterialSidebar
-         mediumlight 8   NSVisualEffectMaterialMediumLight
-         ultradark   9   NSVisualEffectMaterialUltraDark
+         
+         macOS 10.11–10.14
+         NSVisualEffectMaterialAppearanceBased       = 0 (deprecated)
+         NSVisualEffectMaterialLight                 = 1 (deprecated)
+         NSVisualEffectMaterialDark                  = 2 (deprecated)
+         NSVisualEffectMaterialTitlebar              = 3
+         NSVisualEffectMaterialSelection             = 4
+         NSVisualEffectMaterialMenu                  = 5
+         NSVisualEffectMaterialPopover               = 6
+         sNSVisualEffectMaterialSidebar              = 7
+         NSVisualEffectMaterialMediumLight           = 8 (deprecated)
+         NSVisualEffectMaterialUltraDark             = 9 (deprecated)
+         
+         macOS 10.14+
+         NSVisualEffectMaterialHeaderView            = 10
+         NSVisualEffectMaterialSheet                 = 11
+         NSVisualEffectMaterialWindowBackground      = 12
+         NSVisualEffectMaterialHUDWindow             = 13
+         NSVisualEffectMaterialFullScreenUI          = 15
+         NSVisualEffectMaterialToolTip               = 17
+         NSVisualEffectMaterialContentBackground     = 18
+         NSVisualEffectMaterialUnderWindowBackground = 21
+         NSVisualEffectMaterialUnderPageBackground   = 22
+         ???                                         = 23
+         ???                                         = 24
+         ???                                         = 25
+         ???                                         = 26
+         ???                                         = 27
+         ???                                         = 28
+         
          */
         
         if ([[[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"] isEqualToString:@"Dark"]) {
             darkMode = YES;
             [self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantDark]];
+            if (os.majorVersion >= 10 && os.minorVersion >= 14) {
+                [self setMaterial:27];
+            } else {
+                [self setMaterial:NSVisualEffectMaterialDark];
+            }
         } else {
             darkMode = NO;
             [self setAppearance:[NSAppearance appearanceNamed:NSAppearanceNameVibrantLight]];
+            if (os.majorVersion >= 10 && os.minorVersion >= 14) {
+                [self setMaterial:27];
+            } else {
+                [self setMaterial:NSVisualEffectMaterialLight];
+            }
         }
         
         DebugLog(@"with '%@' and material: '%i'!", self.appearance.name, (int)[self material]);
