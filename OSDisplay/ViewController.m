@@ -554,7 +554,7 @@ BOOL darkMode;
     // Draw the background
     [backColor set];
     NSRectFill(NSInsetRect(cellFrame, 0, 5));
-    cellFrame = NSInsetRect(cellFrame, 1, 6);
+    cellFrame = NSInsetRect(cellFrame, 0.9, 6);
     
     // Draw the segments
     [fillColor set];
