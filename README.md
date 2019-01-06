@@ -15,7 +15,7 @@ Usage:
    
       -m	message (string)
    
-      -l	value (0-100 @5)
+      -l	value (0-100)
    
       -d	delay (1.0-60.0 seconds)
    
