@@ -116,7 +116,7 @@ BOOL darkMode;
             HelpLog(@"Arguments:");
             HelpLog(@"  -i\tpath to image-file");
             HelpLog(@"  -m\tmessage (string)");
-            HelpLog(@"  -l\tvalue (0-100 @5)");
+            HelpLog(@"  -l\tvalue (0-100)");
             HelpLog(@"  -d\tdelay (1.0-60.0 seconds)");
             HelpLog(@"  -t\tauto|open|close|eject (external cd/dvd writer)");
             HelpLog(@"  -h\t(show this help text)");
@@ -545,30 +545,36 @@ BOOL darkMode;
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView*)controlView
 {
+    // Defaults
+    self.maxValue = 100;
+    self.minValue = 0;
+    NSColor *fillColor = [NSColor colorWithDeviceWhite:0.9 alpha:0.85];
+    NSColor *backColor = [NSColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:0.85];
+    
     // Draw the background
-    [[NSColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:0.85] set];
+    [backColor set];
     NSRectFill(NSInsetRect(cellFrame, 0, 5));
     cellFrame = NSInsetRect(cellFrame, 1, 6);
     
     // Draw the segments
-    NSColor *fillColor = [NSColor colorWithDeviceWhite:0.9 alpha:0.85];
+    [fillColor set];
     double val = ((self.floatValue - self.minValue) / (self.maxValue - self.minValue) * (self.maxValue - self.minValue) / 100);
     int segments = (int)(self.maxValue - self.minValue);
-    float step = cellFrame.size.width / segments;	// width of one segment
-
+    float segment = cellFrame.size.width / segments;
     int ifill = val * segments + 0.5;
-    for(int i=0; i<segments; i++)
-    {
+    
+    for (int i=0; i<segments; i++) {
         NSRect seg = cellFrame;
         if (i < ifill) {
-            seg.size.width=step-1.0;
-            seg.origin.x+=i*step;
-            [fillColor set];
+            if (i % 5) {
+                seg.size.width = segment+0.5;
+                seg.origin.x  += i*segment-0.5;
+            }
+            else {
+                seg.size.width = segment-1.0;
+                seg.origin.x  += i*segment;
+            }
             NSRectFill(seg);
-#ifdef USE_BORDER
-            [[NSColor lightGrayColor] set];
-            NSFrameRect(seg);
-#endif
         } else {
             return;
         }
