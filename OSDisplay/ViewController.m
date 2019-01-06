@@ -92,7 +92,8 @@ BOOL darkMode;
             }
         }
         
-        else if ([args[i] isEqualToString:@"-tray"]) {
+        else if ([args[i] isEqualToString:@"-t"] || [args[i] isEqualToString:@"-tray"]) {
+            tray = @"auto";
             i++;
             if (i >= argc) break;
             tray = args[i];
@@ -117,7 +118,7 @@ BOOL darkMode;
             HelpLog(@"  -m\tmessage (string)");
             HelpLog(@"  -l\tvalue (0-100 @5)");
             HelpLog(@"  -d\tdelay (1.0-60.0 seconds)");
-            HelpLog(@"  -e\t(open/eject external cd/dvd writer)");
+            HelpLog(@"  -t\tauto|open|close|eject (external cd/dvd writer)");
             HelpLog(@"  -h\t(show this help text)");
             HelpLog(@"-------------------------------------");
             HelpLog(@"Images become resized (max x150)");
