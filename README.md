@@ -19,7 +19,7 @@ Usage:
    
       -d	delay (1.0-60.0 seconds)
    
-      -e	(open/eject external cd/dvd writer)
+      -t	auto|open|close|eject (external cd/dvd writer)
    
       -h	(show help text)
    
