@@ -152,19 +152,19 @@ BOOL darkMode;
         }
     }
     
-    NSLog(@"Arguments: -m '%@' -l '%@' -i '%@' -d '%f'", osdMessage, osdLevelString, osdImagePath, exitDelay);
+    DebugLog(@"Using arguments: -m '%@' -l '%@' -i '%@' -d '%f'", osdMessage, osdLevelString, osdImagePath, exitDelay);
     
     NSNotificationCenter *center = [NSDistributedNotificationCenter defaultCenter];
     
     if ([[NSRunningApplication runningApplicationsWithBundleIdentifier:[[NSBundle mainBundle] bundleIdentifier]] count] > 1) {
         NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys: osdImagePath, @"image", osdMessage, @"message", osdLevelString, @"level", nil];
         [center postNotificationName:@"de.zulu-entertainment.OSDisplay.LaunchCall" object:nil userInfo:info];
-        DebugLog(@"Second instance - terminate!");
+        DebugLog(@"Found another instance running - terminate now!");
         [NSApp terminate:nil];
     }
     else {
         [center addObserver:self selector:@selector(receiveNotification:) name:@"de.zulu-entertainment.OSDisplay.LaunchCall" object:nil];
-        DebugLog(@"First instance run!");
+        DebugLog(@"Starting first instance run");
 
         if (darkMode) {
             tintColor = [NSColor colorWithWhite:0.9 alpha:0.85];
@@ -269,7 +269,7 @@ BOOL darkMode;
                 }
 
                 @catch (NSException *exception) {
-                    NSLog(@"Problem Running Task: %@", [exception description]);
+                    NSLog(@"Problems running the task: %@", [exception description]);
                 }
 
                 @finally {
@@ -314,11 +314,11 @@ BOOL darkMode;
 
 - (void)receiveNotification:(NSNotification *)notification
 {
-    DebugLog(@"Receive notification '%@'\n %@ %@ %@",
-          [notification name],
-          [notification userInfo][@"image"],
-          [notification userInfo][@"message"],
-          [notification userInfo][@"level"]);
+    DebugLog(@"Receive notification: '%@'\n %@ %@ %@",
+             [notification name],
+             [notification userInfo][@"image"],
+             [notification userInfo][@"message"],
+             [notification userInfo][@"level"]);
     
     if ([[notification name] isEqualToString:@"de.zulu-entertainment.OSDisplay.LaunchCall"])
     {
@@ -426,7 +426,7 @@ BOOL darkMode;
 
 - (void)dealloc
 {
-    DebugLog(@"App dealloc!");
+    DebugLog(@"App dealloc");
     [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -439,7 +439,6 @@ BOOL darkMode;
 // SDK macOS 10.12+ -> NSWindowStyleMask
 - (id)initWithContentRect:(NSRect)contentRect styleMask:(NSWindowStyleMask)windowStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)deferCreation
 {
-    DebugLog(@"Init window!");
     if (self = [super initWithContentRect:contentRect
                                 styleMask:NSBorderlessWindowMask
                                   backing:NSBackingStoreBuffered defer:deferCreation]) {
@@ -449,6 +448,7 @@ BOOL darkMode;
         [self setBackgroundColor:[NSColor clearColor]];
         [self setExcludedFromWindowsMenu:YES];
         [self setLevel:NSScreenSaverWindowLevel + 1];
+        DebugLog(@"Init osd window");
     }
     return self;
 }
@@ -460,14 +460,13 @@ BOOL darkMode;
 
 -(id)initWithCoder:(NSCoder *)coder
 {
-    DebugLog(@"Init visual effect view...");
-    
     self = [super initWithCoder:coder];
     
     if (self) {
         
         NSOperatingSystemVersion os = [[NSProcessInfo processInfo] operatingSystemVersion];
         DebugLog(@"Found macOS %@", [NSString stringWithFormat:@"%ld.%ld.%ld", os.majorVersion, os.minorVersion, os.patchVersion]);
+        DebugLog(@"Init visual effect view");
         
         self.wantsLayer = YES;
         self.layer.frame = self.bounds;
@@ -528,7 +527,7 @@ BOOL darkMode;
             }
         }
         
-        DebugLog(@"with '%@' and material: '%i'!", self.appearance.name, (int)[self material]);
+        DebugLog(@"Using appearance: '%@' with material: '%i'", self.appearance.name, (int)[self material]);
     }
     return self;
 }
