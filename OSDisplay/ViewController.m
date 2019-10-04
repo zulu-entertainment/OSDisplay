@@ -86,7 +86,7 @@ BOOL darkMode;
             i++;
             if (i >= argc) break;
             exitDelay = [args[i] floatValue];
-            if (exitDelay < 1.0 || exitDelay > 60.0) {
+            if (exitDelay < 0.1 || exitDelay > 60.0) {
                 exitDelay = 1.5;
                 ErrorLog(@"Resetting delay to: %f", exitDelay);
             }
